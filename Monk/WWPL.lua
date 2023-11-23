@@ -69,7 +69,11 @@ A[3] = function(icon)
     local Chi = Player:Chi()
     local inMelee = A.TigerPalm:IsInRange(target)
     local inFoF = Player:IsChanneling() == "Fists of Fury"
-    local unitCount = MultiUnits:GetByRange(8, 5)
+    -- local unitCount = MultiUnits:GetByRange(8, 5)\
+    local unitCount = MultiUnits:GetBySpell(A.TigerPalm)
+
+    -- MultiUnits:GetBySpell(A.TigerPalm)\
+    -- print("MultiUnits:GetBySpell(A.TigerPalm): ", MultiUnits:GetBySpell(A.TigerPalm))
 
     -- print("Player:IsChanneling(): ", Player:IsChanneling())
 
@@ -122,7 +126,6 @@ A[3] = function(icon)
                 inMelee then return A.FaelineStomp:Show(icon) end
 
             if A.RisingSunKick:IsReadyByPassCastGCD(unit) and inFoF and inMelee then
-                print("Clipping Fists")
                 return A.StopCast:Show(icon)
             end
 

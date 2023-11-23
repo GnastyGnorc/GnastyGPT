@@ -57,6 +57,61 @@ A.Data.ProfileUI = {
                     M = {}
                 }
             }
+        },
+        [ACTION_CONST_PALADIN_RETRIBUTION] = {
+            {{E = "Header", L = {ANY = "General"}}}, { -- [7]
+                {
+                    E = "Checkbox",
+                    DB = "mouseover",
+                    DBV = false,
+                    L = {ANY = "Use @mouseover"}
+                }
+            }, {{E = "Header", L = {ANY = "General"}}}, { -- [7]
+                {
+                    E = "Checkbox",
+                    DB = "AoE",
+                    DBV = true,
+                    L = {ANY = "Use @AoE"}
+                }
+            }, { -- [7]
+                {E = "Header", L = {ANY = " -- Holy Power Dump --"}}
+            }, { -- [3]
+                {
+                    E = "Checkbox",
+                    DB = "LoDDump",
+                    DBV = true,
+                    L = {enUS = "LoD Dump"},
+                    TT = {},
+                    M = {}
+                }, {
+                    E = "Checkbox",
+                    DB = "SotRDump",
+                    DBV = false,
+                    L = {enUS = "SotR Dump"},
+                    TT = {},
+                    M = {}
+                }
+            }, { -- [7] 
+                {E = "Header", L = {ANY = " -- Heal Settings --"}}
+            }, { -- [3]
+                {
+                    E = "Slider",
+                    MIN = -1,
+                    MAX = 100,
+                    DB = "WordOfGloryHP",
+                    DBV = 80,
+                    L = {ANY = A.GetSpellInfo(85673) .. " (%HP)"},
+                    M = {}
+                }
+            }, {
+                {
+                    E = "Checkbox",
+                    DB = "UseBlessing",
+                    DBV = false,
+                    L = {enUS = "Use Blessing of Summer"},
+                    M = {}
+                }
+            }
         }
     }
 }
