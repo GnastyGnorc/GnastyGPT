@@ -91,7 +91,7 @@ A[3] = function(icon)
     local function DamageRotation(unit)
 
         if Unit(player):HasDeBuffs(A.Entangle.ID) > 0 and
-            Unit(player):HasDeBuffs(A.Entangle.ID) <= 7.7 and
+            Unit(player):HasDeBuffs(A.Entangle.ID) <= 7 and
             A.BlessingOfFreedom:IsReady(player) then
             return A.BlessingOfFreedom:Show(icon)
         end
@@ -189,7 +189,7 @@ A[3] = function(icon)
         -- wake_of_ashes,if=holy_power<=2&(cooldown.avenging_wrath.remains|cooldown.crusade.remains)&(!talent.execution_sentence|cooldown.execution_sentence.remains>4|target.time_to_die<8)&(!raid_event.adds.exists|raid_event.adds.in>20|raid_event.adds.up)
 
         -- Using Wake of Ashes
-        if A.WakeOfAshes:IsReady(unit) and not Unit(unit):IsDead() then
+        if A.WakeOfAshes:IsReady(unit) and not Unit(unit):IsDead() and unitCount > 0 then
             local avengingWrathRemains = A.AvengingWrath:GetCooldown()
             local holyPower = HolyPower -- Assuming you have a variable for this
             local executionSentenceRemains = A.ExecutionSentence:GetCooldown()
