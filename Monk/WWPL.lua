@@ -8,6 +8,7 @@ local Unit = Action.Unit
 local Player = Action.Player
 local BurstIsON = Action.BurstIsON
 local MultiUnits = Action.MultiUnits
+local GetToggle = Action.GetToggle
 local ActiveUnitPlates = MultiUnits:GetActiveUnitPlates()
 local player = "player"
 local targettarget = "targettarget"
@@ -85,7 +86,8 @@ A[3] = function(icon)
             return A.TigersLust:Show(icon)
         end
 
-        if A.TouchofDeath:IsReadyByPassCastGCD(unit) and ComboStrike(A.TouchofDeath) and
+        if A.TouchofDeath:IsReadyByPassCastGCD(unit) and
+            ComboStrike(A.TouchofDeath) and
             (Unit(target):HealthPercent() <= 15 or Unit(target):Health() <=
                 Unit(player):Health()) then
             return A.TouchofDeath:Show(icon)
@@ -113,7 +115,7 @@ A[3] = function(icon)
 
         end
 
-        if Unit(player):HasBuffs(A.SerenityBuff.ID) ~= 0 then
+        if Unit(player):HasBuffs(A.Serenity.ID) ~= 0 then
 
             if A.FaelineStomp:IsReady(player) and
                 Unit(target):HasDeBuffs(A.FaeExposure.ID, player) == 0 and
@@ -133,7 +135,7 @@ A[3] = function(icon)
                 return A.InvokeXuentheWhiteTiger:Show(icon)
             end
 
-            if Unit(player):HasBuffs(A.SerenityBuff.ID) <= 1.5 and
+            if Unit(player):HasBuffs(A.Serenity.ID) <= 1.5 and
                 A.FistsOfFury:IsReady(unit) and inMelee then
                 return A.FistsOfFury:Show(icon)
             end
