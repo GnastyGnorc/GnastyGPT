@@ -143,7 +143,7 @@ A[3] = function(icon)
         if A.HolyWordChastise:IsReady(target) and inRange then
             return A.HolyWordChastise:Show(icon)
         end
-
+        
         if A.ShadowWordPain:IsReady(target) and
             Unit(target):HasDeBuffs(A.ShadowWordPain.ID, true) == 0 and inRange then
             return A.ShadowWordPain:Show(icon)
