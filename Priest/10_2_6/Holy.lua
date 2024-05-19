@@ -133,6 +133,9 @@ A[3] = function(icon)
             HealCalc(A.FlashHeal) and Unit(player):HasBuffs(A.SurgeOfLight.ID) ~=
             0 then return A.FlashHeal:Show(icon) end
 
+        if A.FlashHeal:IsReady(unit) and inRange and Unit(unit):HealthDeficit() >=
+            HealCalc(A.FlashHeal) then return A.FlashHeal:Show(icon) end
+
         if A.Heal:IsReady(unit) and inRange and Unit(unit):HealthDeficit() >=
             HealCalc(A.Heal) then return A.Heal:Show(icon) end
 
@@ -143,7 +146,7 @@ A[3] = function(icon)
         if A.HolyWordChastise:IsReady(target) and inRange then
             return A.HolyWordChastise:Show(icon)
         end
-        
+
         if A.ShadowWordPain:IsReady(target) and
             Unit(target):HasDeBuffs(A.ShadowWordPain.ID, true) == 0 and inRange then
             return A.ShadowWordPain:Show(icon)
@@ -156,48 +159,8 @@ A[3] = function(icon)
         if A.Smite:IsReady(target) and inRange then
             return A.Smite:Show(icon)
         end
-        ------------------------------------------
 
-        -- HealCalc(A.PrayerOfHealing)
-        -- print("HealingEngine.GetBelowHealthPercentUnits(99, 40): ", HealingEngine.GetBelowHealthPercentUnits(99, 40))
-
-        -- print("A.PrayerOfMending:IsReady(unit): ", A.PrayerOfMending:IsReady(player))
-        -- print("Unit(unit):GetRange() <= 40: ", inRange)
-
-        -- if A.HolyWordSanctify:IsReady(player) and
-        --     HealingEngine.GetBelowHealthPercentUnits(HolyWordSanctifyHP, 10) == 5 then
-        --     return A.HolyWordSanctify:Show(icon)
-        -- end
-
-        -- if A.HolyWordSanctify:IsReady(player) and Unit(unit):HealthDeficit() >=
-        --     HealCalc(A.HolyWordSanctify) then
-        --     return A.HolyWordSanctify:Show(icon)
-        -- end
-
-        -- if A.CircleOfHealing:IsReady(player) and
-        --     HealingEngine.GetBelowHealthPercentUnits(99, 40) >= 4 then
-        --     return A.CircleOfHealing:Show(icon)
-        -- end
-
-        -- if A.CircleOfHealing:IsReady(player) and Unit(unit):HealthDeficit() >=
-        --     HealCalc(A.CircleOfHealing) then
-        --     return A.CircleOfHealing:Show(icon)
-        -- end
-
-        -- if A.Halo:IsReady(player) then return A.Halo:Show(icon) end
-
-        -- if A.PrayerOfHealing:IsReady(player) and
-        --     HealingEngine.GetBelowHealthPercentUnits(99, 40) >= 4 then
-        --     return A.PrayerOfHealing:Show(icon)
-        -- end
-
-        -- if A.PrayerOfHealing:IsReady(player) and Unit(unit):HealthDeficit() >=
-        --     HealCalc(A.PrayerOfHealing) then
-        --     return A.PrayerOfHealing:Show(icon)
-        -- end
-
-        -- if A.Smite:IsReady(target) and inRange then return A.Smite:Show(icon) end
-
+        
     end
 
     HealingRotation = Action.MakeFunctionCachedDynamic(HealingRotation)

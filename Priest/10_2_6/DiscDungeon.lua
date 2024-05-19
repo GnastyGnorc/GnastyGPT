@@ -151,7 +151,7 @@ A[3] = function(icon)
             (A.PowerWordRadiance:GetSpellChargesFrac() > 1.8) and inCombat then
             return A.PowerWordRadiance:Show(icon)
         end
-
+        
         if A.ShadowFiend:IsReady(target) and IsUnitEnemy(target) and
             BurstIsON(player) then return A.ShadowFiend:Show(icon) end
 
