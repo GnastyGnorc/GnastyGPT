@@ -108,10 +108,17 @@ A[3] = function(icon)
 
         local inRange = isInRange(unit)
 
-        if A.Purify:IsReady(unit) and inRange and
-            A.AuraIsValid(unit, true, "Dispel") then
+        -- if A.Purify:IsReady(unit) and inRange and
+        --     A.AuraIsValid(unit, true, "Dispel") then
+        --     return A.Purify:Show(icon)
+        -- end
+
+        if A.Purify:IsReady(target) and Unit(target):Name() == "Afflicted Soul" then
             return A.Purify:Show(icon)
         end
+
+        if A.PowerWordLife:IsReady(unit) and Unit(unit):HealthPercent() < 35 and
+            inRange then return A.PowerWordLife:Show(icon) end
 
         if A.HolyWordSerenity:IsReady(unit) and inRange and
             Unit(unit):HealthDeficit() >= HealCalc(A.HolyWordSerenity) then
@@ -121,9 +128,6 @@ A[3] = function(icon)
         if A.PrayerOfMending:IsReady(unit) and inRange then
             return A.PrayerOfMending:Show(icon)
         end
-
-        if A.PowerWordLife:IsReady(unit) and Unit(unit):HealthPercent() < 35 and
-            inRange then return A.PowerWordLife:Show(icon) end
 
         if A.DivineStar:IsReady(player) and inCombat and inRange then
             return A.DivineStar:Show(icon)
@@ -160,7 +164,6 @@ A[3] = function(icon)
             return A.Smite:Show(icon)
         end
 
-        
     end
 
     HealingRotation = Action.MakeFunctionCachedDynamic(HealingRotation)

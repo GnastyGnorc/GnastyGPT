@@ -261,7 +261,7 @@ A[3] = function(icon)
             return A.BlackoutKick:Show(icon)
         end
 
-        if A.SpinningCraneKick:IsReady(unitID) and unitCount >= 4 and inMelee and
+        if A.SpinningCraneKick:IsReady(unitID) and unitCount >= 3 and inMelee and
             not Unit(unitID):IsDead() then
             return A.SpinningCraneKick:Show(icon)
         end
