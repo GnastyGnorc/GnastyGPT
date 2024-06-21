@@ -10,6 +10,7 @@ local IsUnitFriendly = Action.IsUnitFriendly
 local HealingEngine = Action.HealingEngine
 local GetToggle = Action.GetToggle
 local TeamCache = Action.TeamCache
+local BurstIsON = Action.BurstIsON
 
 Action[ACTION_CONST_DRUID_RESTORATION] = {
     -- Class Tree
@@ -20,6 +21,14 @@ Action[ACTION_CONST_DRUID_RESTORATION] = {
     Regrowth = Create({Type = "Spell", ID = 8936}),
     Rejuvenation = Create({Type = "Spell", ID = 774}),
     Swiftmend = Create({Type = "Spell", ID = 18562}),
+    Starfire = Create({Type = "Spell", ID = 197628}),
+    BearForm = Create({Type = "Spell", ID = 5487}),
+    Rip = Create({Type = "Spell", ID = 1079}),
+    Rake = Create({Type = "Spell", ID = 1822}),
+    Thrash = Create({Type = "Spell", ID = 106830}),
+    Shred = Create({Type = "Spell", ID = 5221}),
+    FerociousBite = Create({Type = "Spell", ID = 22568}),
+    Innervate = Create({Type = "Spell", ID = 29166}),
 
     -- Spec Tree
     NewMoon = Create({Type = "Spell", ID = 274281}),
@@ -31,6 +40,15 @@ Action[ACTION_CONST_DRUID_RESTORATION] = {
     WildGrowth = Create({Type = "Spell", ID = 48438}),
     GroveGuardians = Create({Type = "Spell", ID = 102693}),
     CenarionWard = Create({Type = "Spell", ID = 102351}),
+    NaturesSwiftness = Create({Type = "Spell", ID = 132158}),
+    TreeOfLife = Create({Type = "Spell", ID = 33891}),
+
+    -- Buffs
+    CatForm = Create({Type = "Spell", ID = 768}),
+    MoonKinForm = Create({Type = "Spell", ID = 197625}),
+    Incarnation = Create({Type = "Spell", ID = 117679}),
+    SoulOfTheForest = Create({Type = "Spell", ID = 114108}),
+    Clearcasting = Create({Type = "Spell", ID = 16870}),
 
     -- Debuffs
     MoonfireDebuff = Create({Type = "Spell", ID = 164812, Hidden = true}),
@@ -50,6 +68,47 @@ local target = "target"
 local mouseover = "mouseover"
 local focustarget = "focustarget"
 local focus = "focus"
+
+-- TMW:RegisterCallback("TMW_ACTION_HEALINGENGINE_UNIT_UPDATE",
+--                      function(callbackEvent, thisUnit, db, QueueOrder)
+--     local unitID = thisUnit.Unit
+--     local Role = thisUnit.Role
+--     local unitHP = thisUnit.realHP
+--     local HP = thisUnit.HP
+
+--     -- Spread Rejuv
+--     if thisUnit.useHoTs and not QueueOrder.useHoTs[Role] and
+--         A.Rejuvenation:IsReady(unitID) and
+--         Unit(unitID):HasBuffs(A.Rejuvenation.ID, true) == 0 and unitHP < 95 then
+--         QueueOrder.useHoTs[Role] = true
+--         local default = HP - 25
+--         if Role == "HEALER" then
+--             thisUnit:SetupOffsets(db.OffsetHealersHoTs, default)
+--         elseif Role == "TANK" then
+--             thisUnit:SetupOffsets(db.OffsetTanksHoTs, default)
+--         else
+--             thisUnit:SetupOffsets(db.OffsetDamagersHoTs, default)
+--         end
+--         return
+--     end
+
+--     -- Spread Rejuv
+--     if thisUnit.useHoTs and not QueueOrder.useHoTs[Role] and
+--         A.Rejuvenation:IsReady(unitID) and
+--         Unit(unitID):HasBuffs(A.Rejuvenation.ID, true) == 0 then
+--         QueueOrder.useHoTs[Role] = true
+--         local default = HP - 25
+--         if Role == "HEALER" then
+--             thisUnit:SetupOffsets(db.OffsetHealersHoTs, default)
+--         elseif Role == "TANK" then
+--             thisUnit:SetupOffsets(db.OffsetTanksHoTs, default)
+--         else
+--             thisUnit:SetupOffsets(db.OffsetDamagersHoTs, default)
+--         end
+--         return
+--     end
+
+-- end)
 
 local function HealCalc(heal)
 
@@ -82,7 +141,10 @@ A[3] = function(icon)
     local PartyGroup = not A.IsInPvP and TeamCache.Friendly.Size <= 5
     local RaidGroup = not A.IsInPvP and TeamCache.Friendly.Size > 5
     local inCombat = Unit(player):CombatTime() > 0
-    local isMoving = A.Player:IsMoving()
+
+    local comboPoints = Player:ComboPoints()
+
+    -- print("HealingEngine.GetHealthAVG(): ", HealingEngine.GetHealthAVG())
 
     local function HealingRotation(unit)
 
@@ -111,72 +173,70 @@ A[3] = function(icon)
 
         -- Dispel Rotation End -- 
 
-        if A.CenarionWard:IsReady(unit) and isInRange(unit) and
-            Unit(unit):Role("TANK") then return A.CenarionWard:Show(icon) end
-
-        if A.AdaptiveSwarm:IsReady(unit) and isInRange(unit) and
-            Unit(unit):HealthDeficit() >= HealCalc(A.AdaptiveSwarm) and
-            Unit(unit):HasBuffs(A.AdaptiveSwarm.ID) == 0 then
-            return A.AdaptiveSwarm:Show(icon)
-        end
-
-        -- lifebloom me
         if A.Lifebloom:IsReady(player) and
             Unit(player):HasBuffs(A.Lifebloom.ID, true) <= 2 and inCombat then
             return A.Darkflight:Show(icon)
         end
 
-        -- lifebloom tank
-        if A.Lifebloom:IsReady(unit) and Unit(unit):Role("TANK") and
-            isInRange(unit) and Unit(unit):HasBuffs(A.Lifebloom.ID, true) <= 2 and
-            inCombat then return A.Lifebloom:Show(icon) end
+        if A.WildGrowth:IsReady(unit) and
+            Unit(player):HasBuffs(A.SoulOfTheForest.ID) ~= 0 and not isMoving then
+            return A.WildGrowth:Show(icon)
+        end
+
+        if A.Regrowth:IsReady(unit) and Unit(player):HasBuffs(A.Clearcasting.ID) ~=
+            0 and not isMoving then return A.Regrowth:Show(icon) end
+
+        if Unit(player):HasBuffs(A.Innervate.ID) ~= 0 and
+            A.WildGrowth:IsReady(unit) and not isMoving then
+            return A.WildGrowth:Show(icon)
+        end
+
+        if Unit(player):HasBuffs(A.Innervate.ID) ~= 0 and
+            Unit(unit):HasBuffs(A.Rejuvenation.ID, true) == 0 then
+            return A.Rejuvenation:Show(icon)
+        end
+
+        if Unit(player):HasBuffs(A.Incarnation.ID) ~= 0 and
+            A.WildGrowth:IsReady(unit) and not isMoving then
+            return A.WildGrowth:Show(icon)
+        end
+
+        if Unit(player):HasBuffs(A.Incarnation.ID) ~= 0 and
+            Unit(unit):HasBuffs(A.Rejuvenation.ID, true) == 0 then
+            return A.Rejuvenation:Show(icon)
+        end
 
         if A.GroveGuardians:IsReady(player) and
             A.GroveGuardians:GetSpellChargesFrac() > 2.8 then
             return A.Shadowmeld:Show(icon)
         end
 
-        -- if A.GroveGuardians:IsReady(player) and
-        --     A.GroveGuardians:GetSpellChargesFrac() > 0.8 then
-        --     return A.Shadowmeld:Show(icon)
-        -- end
-
-        -- and HealingEngine.GetHealthAVG() <= 85
-
-        if A.Swiftmend:IsReady(unit) and isInRange(unit) and
-            Unit(unit):HealthDeficit() >= HealCalc(A.Swiftmend) and
-            (Unit(unit):HasBuffs(A.Regrowth.ID, true) ~= 0 or
-                Unit(unit):HasBuffs(A.Rejuvenation.ID, true) ~= 0) then
+        if A.Swiftmend:IsReady(unit) and HealingEngine.GetHealthAVG() < 90 then
             return A.Swiftmend:Show(icon)
         end
 
-        if A.WildGrowth:IsReady(unit) and isInRange(unit) and
-            HealingEngine.GetHealthAVG() <= 65 then
-            return A.WildGrowth:Show(icon)
+        -- if A.Regrowth:IsReady(unit) and isInRange(unit) and
+        --     Unit(unit):HealthPercent() <= 70 and not isMoving then
+        --     return A.Regrowth:Show(icon)
+        -- end
+
+        for i = 1, #getMembersAll do
+            local currentUnit = getMembersAll[i].Unit
+            if isInRange(unit) then
+
+                if A.Rejuvenation:IsReady(currentUnit) and
+                    Unit(currentUnit):HasBuffs(A.Rejuvenation.ID, true) == 0 then
+                    HealingEngine.SetTarget(currentUnit, 0.5)
+                    break
+                end
+
+            end
         end
 
-        if A.Regrowth:IsReady(unit) and isInRange(unit) and
-            Unit(unit):HealthPercent() <= 70 and not isMoving then
-            return A.Regrowth:Show(icon)
-        end
-
-        if A.Rejuvenation:IsReady(unit) and isInRange(unit) and
-            Unit(unit):HealthPercent() <= 99 and
+        if A.Rejuvenation:IsReady(unit) and
             Unit(unit):HasBuffs(A.Rejuvenation.ID, true) == 0 then
             return A.Rejuvenation:Show(icon)
         end
-
-        if A.Moonfire:IsReady(target) and
-            Unit(target):HasDeBuffs(A.MoonfireDebuff.ID, true) <= 1 then
-            return A.Moonfire:Show(icon)
-        end
-
-        if A.Sunfire:IsReady(target) and
-            Unit(target):HasDeBuffs(A.SunfireDebuff.ID, true) <= 1 then
-            return A.Sunfire:Show(icon)
-        end
-
-        if A.Wrath:IsReady(target) then return A.Wrath:Show(icon) end
 
     end
 

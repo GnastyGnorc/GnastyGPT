@@ -1,3 +1,4 @@
+-- 6/12/24
 local _G, setmetatable = _G, setmetatable
 local TMW = _G.TMW
 local UnitAura, UnitStagger, UnitGUID = _G.UnitAura, _G.UnitStagger, _G.UnitGUID
@@ -78,7 +79,8 @@ Action[ACTION_CONST_PALADIN_HOLY] = {
     ArcaneTorrent = Create({Type = "Spell", ID = 50613}),
 
     -- Buffs
-    ShiningLightBuff = Create({Type = "Spell", ID = 414445, Hidden = true})
+    ShiningLightBuff = Create({Type = "Spell", ID = 414445, Hidden = true}),
+    GlimmerOfLight = Create({Type = "Spell", ID = 287280})
 
     -- Debuffs
 
@@ -94,6 +96,58 @@ local target = "target"
 local mouseover = "mouseover"
 local focustarget = "focustarget"
 local focus = "focus"
+
+TMW:RegisterCallback("TMW_ACTION_HEALINGENGINE_UNIT_UPDATE",
+                     function(callbackEvent, thisUnit, db, QueueOrder)
+    local unitID = thisUnit.Unit
+    local Role = thisUnit.Role
+    local unitHP = thisUnit.realHP
+    local HP = thisUnit.HP
+
+    -- Spread Glimmer
+    if thisUnit.useHoTs and not QueueOrder.useHoTs[Role] and
+        A.HolyShock:IsReady(unitID) and
+        Unit(unitID):HasBuffs(A.GlimmerOfLight.ID, true) == 0 and unitHP < 95 then
+        QueueOrder.useHoTs[Role] = true
+        local default = HP - 25
+        if Role == "HEALER" then
+            thisUnit:SetupOffsets(db.OffsetHealersHoTs, default)
+        elseif Role == "TANK" then
+            thisUnit:SetupOffsets(db.OffsetTanksHoTs, default)
+        else
+            thisUnit:SetupOffsets(db.OffsetDamagersHoTs, default)
+        end
+        return
+    end
+
+    -- Spread Glimmer
+    if thisUnit.useHoTs and not QueueOrder.useHoTs[Role] and
+        A.HolyShock:IsReady(unitID) and
+        Unit(unitID):HasBuffs(A.GlimmerOfLight.ID, true) <= 10 then
+        QueueOrder.useHoTs[Role] = true
+        local default = HP - 25
+        if Role == "HEALER" then
+            thisUnit:SetupOffsets(db.OffsetHealersHoTs, default)
+        elseif Role == "TANK" then
+            thisUnit:SetupOffsets(db.OffsetTanksHoTs, default)
+        else
+            thisUnit:SetupOffsets(db.OffsetDamagersHoTs, default)
+        end
+        return
+    end
+end)
+
+local function HealCalc(heal)
+    local healamount = 0
+    local spellDescriptions = {
+        [A.HolyShock] = A.HolyShock:GetSpellDescription(),
+        [A.WordOfGlory] = A.WordOfGlory:GetSpellDescription()
+    }
+
+    if spellDescriptions[heal] then healamount = spellDescriptions[heal][1] end
+
+    return tonumber((tostring(healamount):gsub("%.", "")))
+end
 
 A[3] = function(icon)
 
@@ -115,6 +169,7 @@ A[3] = function(icon)
     local AvengingCrusaderActive = Unit(player):HasBuffs(A.AvengingCrusader.ID,
                                                          true) > 0
 
+    local function isInRange(unit) return A.Cleanse:IsInRange(unit) end
     local function HealingRotation(unit)
 
         if AvengingCrusaderActive then
@@ -134,12 +189,21 @@ A[3] = function(icon)
                 return A.CrusaderStrike:Show(icon)
             end
 
-            if HolyPower >= 3 and A.ShieldOfTheRighteous:IsReady(player) and
-                not Unit(unit):IsDead() and inMelee then
-                return A.ShieldOfTheRighteous:Show(icon)
-            end
+            if A.HolyShock:IsReady(unit) and
+                Unit(unit):HasBuffs(A.GlimmerOfLight.ID) <= 5 and
+                Unit(unit):HealthDeficit() >= HealCalc(A.HolyShock) and
+                isInRange(unit) then return A.HolyShock:Show(icon) end
+
+            if A.HolyShock:IsReady(unit) and
+                Unit(unit):HasBuffs(A.GlimmerOfLight.ID) <= 5 and
+                isInRange(unit) then return A.HolyShock:Show(icon) end
 
             -- Attack Holy Shock
+
+            if A.HolyShock:IsReady(unit) and Unit(unit):HealthDeficit() >=
+                HealCalc(A.HolyShock) then
+                return A.HolyShock:Show(icon)
+            end
 
             if A.HolyShock:IsReady(unit) and IsUnitEnemy(target) then
                 return A.Fireblood:Show(icon)
@@ -147,22 +211,21 @@ A[3] = function(icon)
 
         end
 
-        -- if Unit(player):HasBuffs(A.ShiningLightBuff.ID) > 0 and
-        --     A.LightOfDawn:IsReady(player) and HolyPower < 3 then
-        --     return A.LightOfDawn:Show(icon)
-        -- end
+        if Unit(player):HasBuffs(A.ShiningLightBuff.ID) > 0 and
+            A.WordOfGlory:IsReady(unit) and isInRange(unit) and
+            not Unit(unit):IsDead() and Unit(unit):HealthDeficit() >=
+            HealCalc(A.WordOfGlory) then return A.WordOfGlory:Show(icon) end
 
         if A.HammerofWrath:IsReady(target) and IsUnitEnemy(target) and
             not Unit(target):IsDead() then
             return A.HammerofWrath:Show(icon)
         end
 
-        if A.DivineToll:IsReady(target) and not Unit(target):IsDead() then
-            return A.DivineToll:Show(icon)
-        end
+        if A.DivineToll:IsReady(target) and not Unit(target):IsDead() and
+            inCombat then return A.DivineToll:Show(icon) end
 
         if HolyPower == 5 and A.AvengingCrusader:IsReady(player) and
-            not AvengingCrusaderActive then
+            not AvengingCrusaderActive and inCombat then
             return A.AvengingCrusader:Show(icon)
         end
 
@@ -190,6 +253,16 @@ A[3] = function(icon)
         if A.HammerofWrath:IsReady(target) and IsUnitEnemy(target) and
             not Unit(target):IsDead() then
             return A.HammerofWrath:Show(icon)
+        end
+
+        if A.HolyShock:IsReady(unit) and
+            Unit(unit):HasBuffs(A.GlimmerOfLight.ID) <= 5 and
+            Unit(unit):HealthDeficit() >= HealCalc(A.HolyShock) and
+            isInRange(unit) then return A.HolyShock:Show(icon) end
+
+        if A.HolyShock:IsReady(unit) and
+            Unit(unit):HasBuffs(A.GlimmerOfLight.ID) <= 5 and isInRange(unit) then
+            return A.HolyShock:Show(icon)
         end
 
         -- Attack Holy Shock

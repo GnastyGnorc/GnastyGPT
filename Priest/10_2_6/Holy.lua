@@ -117,7 +117,7 @@ A[3] = function(icon)
             return A.Purify:Show(icon)
         end
 
-        if A.PowerWordLife:IsReady(unit) and Unit(unit):HealthPercent() < 35 and
+        if A.PowerWordLife:GetCooldown() == 0 and Unit(unit):HealthPercent() < 35 and
             inRange then return A.PowerWordLife:Show(icon) end
 
         if A.HolyWordSerenity:IsReady(unit) and inRange and
