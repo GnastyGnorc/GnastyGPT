@@ -43,12 +43,12 @@ Action[ACTION_CONST_PALADIN_PROTECTION] = {
 local A = setmetatable(Action[ACTION_CONST_PALADIN_PROTECTION],
                        {__index = Action})
 
-local function IsInMelee(unit) return Unit(unit):GetRange() <= 4 end
+local function IsInMelee(unit) return true end
 
 A[3] = function(icon)
 
     local HolyPower = Player:HolyPower()
-
+    local inMelee = true
 
 
     function DamageRotation(unit)

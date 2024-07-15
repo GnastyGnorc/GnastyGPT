@@ -13,6 +13,11 @@ local BurstIsON = Action.BurstIsON
 
 local player = "player"
 local unit = "target"
+local targettarget = "targettarget"
+local target = "target"
+local mouseover = "mouseover"
+local focustarget = "focustarget"
+local focus = "focus"
 
 Action[ACTION_CONST_MONK_BREWMASTER] = {
     -- Class Tree
@@ -28,6 +33,7 @@ Action[ACTION_CONST_MONK_BREWMASTER] = {
     SummonWhiteTigerStatue = Action.Create({Type = "Spell", ID = 388686}),
     TigerPalm = Action.Create({Type = "Spell", ID = 100780}),
     TouchOfDeath = Action.Create({Type = "Spell", ID = 322109}),
+    Paralysis = Create({Type = "Spell", ID = 115078}),
 
     -- Spec Tree
 
@@ -84,8 +90,11 @@ A[3] = function(icon)
     local isMoving = A.Player:IsMoving()
     local lastCast = A.LastPlayerCastID
     local inMelee = A.TigerPalm:IsInRange(target)
-    local unitCount = MultiUnits:GetByRange(8, 5)
+    -- local unitCount = MultiUnits:GetByRange(8, 5)
+    local unitCount = MultiUnits:GetBySpell(A.TigerPalm)
     local combatTime = Unit("player"):CombatTime()
+
+    -- print("unitCount: ", unitCount)
 
     -- print("combatTime: ", combatTime)
 
@@ -93,13 +102,16 @@ A[3] = function(icon)
 
     -- Defensives
 
-    if A.TouchOfDeath:IsReady(unit) then
-        return A.TouchOfDeath:Show(icon)
+    if A.Paralysis:IsReady() and Unit(mouseover):Name() == "Incorporeal Being" then
+        return A.Paralysis:Show(icon)
     end
 
+    if A.TouchOfDeath:IsReady(unit) then return A.TouchOfDeath:Show(icon) end
+
     if A.PurifyingBrew:IsReady(player) and
-        (A.PurifyingBrew:GetSpellChargesFrac() > 1.8) and
-        HasStagger() then return A.PurifyingBrew:Show(icon) end
+        (A.PurifyingBrew:GetSpellChargesFrac() > 1.8) and HasStagger() then
+        return A.PurifyingBrew:Show(icon)
+    end
 
     if A.CelestialBrew:IsReady(player) and HasStagger() and
         A.PurifyingBrew:GetSpellCharges() ~= 2 then

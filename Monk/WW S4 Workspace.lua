@@ -1,3 +1,4 @@
+-- WW S4 Workspace
 local _G, setmetatable = _G, setmetatable
 local TMW = _G.TMW
 local CNDT = TMW.CNDT
@@ -14,7 +15,7 @@ local player = "player"
 local targettarget = "targettarget"
 local target = "target"
 local mouseover = "mouseover"
-local focustarget = "focustarget"   
+local focustarget = "focustarget"
 local focus = "focus"
 
 Action[ACTION_CONST_MONK_WINDWALKER] = {
@@ -27,6 +28,7 @@ Action[ACTION_CONST_MONK_WINDWALKER] = {
     SpinningCraneKick = Create({Type = "Spell", ID = 101546}),
     SummonWhiteTigerStatue = Create({Type = "Spell", ID = 388686}),
     TigerPalm = Create({Type = "Spell", ID = 100780}),
+    TigerPalm1 = Create({Type = "Spell", ID = 100780, desc = "TigerPalm 1"}),
     TigersLust = Create({Type = "Spell", ID = 116841}),
     TouchofDeath = Create({Type = "Spell", ID = 322109}),
 
@@ -45,6 +47,7 @@ Action[ACTION_CONST_MONK_WINDWALKER] = {
     TeachingsOfTheMonastery = Create({Type = "Spell", ID = 202090}),
     DanceOfChiJi = Create({Type = "Spell", ID = 325202}),
     SerenityBuff = Create({Type = "Spell", ID = 152173}),
+    SEF = Create({Type = "Spell", ID = 137639}),
 
     -- Debuffs
     Entangle = Create({Type = "Spell", ID = 408556, Hidden = true}),
@@ -109,11 +112,19 @@ A[3] = function(icon)
                 return A.InvokeXuentheWhiteTiger:Show(icon)
             end
 
+            if A.BoneDustBrew:IsReady(player) and 
+
             if A.Serenity:IsReady(player) and
                 not A.InvokeXuentheWhiteTiger:IsReady(unit) and
                 Unit(target):HasDeBuffs(A.FaeExposure.ID, player) == 0 then
                 return A.Serenity:Show(icon)
             end
+
+            -- if A.BoneDustBrew:IsReady(player) and
+            --     (Unit(player):HasBuffs(A.SEF.ID) ~= 0 or
+            --         Unit(player):HasBuffs(A.SerenityBuff.ID) ~= 0) then
+            --     return A.BoneDustBrew:Show(icon)
+            -- end
 
         end
 
@@ -228,7 +239,7 @@ A[3] = function(icon)
             Unit(player):HasBuffs(A.DanceOfChiJi.ID) ~= 0 and inMelee then
             return A.SpinningCraneKick:Show(icon)
         end
-
+        
         if A.BlackoutKick:IsReady(unit) and ComboStrike(A.BlackoutKick) and
             inMelee then return A.BlackoutKick:Show(icon) end
 

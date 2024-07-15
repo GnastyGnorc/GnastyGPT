@@ -9,6 +9,7 @@ local Player = Action.Player
 local BurstIsON = Action.BurstIsON
 local MultiUnits = Action.MultiUnits
 local ActiveUnitPlates = MultiUnits:GetActiveUnitPlates()
+local GetToggle = Action.GetToggle
 local player = "player"
 local targettarget = "targettarget"
 local target = "target"
@@ -27,6 +28,8 @@ Action[ACTION_CONST_PALADIN_RETRIBUTION] = {
     Consecration = Create({Type = "Spell", ID = 26573}),
     WordOfGlory = Create({Type = "Spell", ID = 85673}),
     ShieldOfTheRighteous = Create({Type = "Spell", ID = 53600}),
+    BlessingOfFreedom = Create({Type = "Spell", ID = 1044}),
+    Rebuke = Create({Type = "Spell", ID = 96231}),
 
     -- Spec Abilities
 
@@ -42,7 +45,7 @@ Action[ACTION_CONST_PALADIN_RETRIBUTION] = {
     FinalVerdict = Create({Type = "Spell", ID = 383328}),
     ShieldOfVengeance = Create({Type = "Spell", ID = 184662}),
 
-    -- Buffs
+    -- Buffs    
 
     EmpyreanPower = Create({Type = "Spell", ID = 326733}),
     TemplarSlash = Create({Type = "Spell", ID = 406647}),
@@ -51,6 +54,7 @@ Action[ACTION_CONST_PALADIN_RETRIBUTION] = {
     -- Debuffs
     JudgmentDebuff = Create({Type = "Spell", ID = 197277}),
     ExecutionSentenceDebuff = Create({Type = "Spell", ID = 343527}),
+    Entangle = Create({Type = "Spell", ID = 408556, Hidden = true}),
 
     -- Talents
     ConsecratedBlade = Create({Type = "Spell", ID = 404834}),
@@ -73,11 +77,24 @@ A[3] = function(icon)
 
     local HolyPower = Player:HolyPower()
     local inMelee = true
-    local unitCount = MultiUnits:GetByRange(8, 5)
+    local isAoE = GetToggle(2, "AoE")
+    local unitCount = MultiUnits:GetBySpell(A.Rebuke)
+    -- local unitCount2 = 
+    -- print("unitCount2: ", unitCount2)
+
+    -- unitCount = 1
+
+    -- if isAoE then unitCount = 3 end
 
     -- print("inMelee: ", inMelee)
 
     local function DamageRotation(unit)
+
+        if Unit(player):HasDeBuffs(A.Entangle.ID) > 0 and
+            Unit(player):HasDeBuffs(A.Entangle.ID) <= 7 and
+            A.BlessingOfFreedom:IsReady(player) then
+            return A.BlessingOfFreedom:Show(icon)
+        end
 
         if BurstIsON(player) and inMelee then
 
@@ -172,7 +189,7 @@ A[3] = function(icon)
         -- wake_of_ashes,if=holy_power<=2&(cooldown.avenging_wrath.remains|cooldown.crusade.remains)&(!talent.execution_sentence|cooldown.execution_sentence.remains>4|target.time_to_die<8)&(!raid_event.adds.exists|raid_event.adds.in>20|raid_event.adds.up)
 
         -- Using Wake of Ashes
-        if A.WakeOfAshes:IsReady(unit) then
+        if A.WakeOfAshes:IsReady(unit) and not Unit(unit):IsDead() and unitCount > 0 then
             local avengingWrathRemains = A.AvengingWrath:GetCooldown()
             local holyPower = HolyPower -- Assuming you have a variable for this
             local executionSentenceRemains = A.ExecutionSentence:GetCooldown()
