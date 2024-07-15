@@ -239,7 +239,7 @@ A[3] = function(icon)
             Unit(player):HasBuffs(A.DanceOfChiJi.ID) ~= 0 and inMelee then
             return A.SpinningCraneKick:Show(icon)
         end
-
+        
         if A.BlackoutKick:IsReady(unit) and ComboStrike(A.BlackoutKick) and
             inMelee then return A.BlackoutKick:Show(icon) end
 
