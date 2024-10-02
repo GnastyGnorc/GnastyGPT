@@ -37,7 +37,7 @@ Action[ACTION_CONST_PALADIN_HOLY] = {
     RetributionAura = Create({Type = "Spell", ID = 183435}),
     SenseUndead = Create({Type = "Spell", ID = 5502}),
     ShieldOfTheRighteous = Create({Type = "Spell", ID = 53600}),
-    WordOfGlory = Create({Type = "Spell", ID = 85673}),
+    WordOfGlory = Create({Type = "Spell", ID = 85673, Texture = 133192}),
 
     -- Spec Tree
     Absolution = Create({Type = "Spell", ID = 212056}),

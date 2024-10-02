@@ -118,9 +118,9 @@ A[3] = function(icon)
         return A.CelestialBrew:Show(icon)
     end
 
-    if A.ExpelHarm:IsReady(player) and GetSpellCount(A.ExpelHarm.ID) > 2 then
-        return A.ExpelHarm:Show(icon)
-    end
+    -- if A.ExpelHarm:IsReady(player) and GetSpellCount(A.ExpelHarm.ID) > 2 then
+    --     return A.ExpelHarm:Show(icon)
+    -- end
 
     function DamageRotation(unit)
 
