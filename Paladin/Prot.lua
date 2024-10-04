@@ -59,6 +59,7 @@ end
 A[3] = function(icon)
 	local HolyPower = Player:HolyPower()
 	local inMelee = true
+	local inCombat = Unit(player):CombatTime() > 0
 
 	function DamageRotation(unit)
 		if
@@ -86,7 +87,7 @@ A[3] = function(icon)
 			return A.AvengersShield:Show(icon)
 		end
 
-		if A.Consecration:IsReady(player) and IsInMelee(unit) and Unit(player):HasBuffs(A.ConsecrationBuff.ID) == 0 then
+		if A.Consecration:IsReady(player) and inCombat and IsInMelee(unit) and Unit(player):HasBuffs(A.ConsecrationBuff.ID) == 0 then
 			return A.Consecration:Show(icon)
 		end
 
@@ -113,7 +114,7 @@ A[3] = function(icon)
 		if
 			A.WordOfGlory:IsReady(player)
 			and Unit(player):HasBuffs(A.ShiningLight.ID) ~= 0
-			and Unit(player):HealthPercent() < 50
+			and Unit(player):HealthPercent() < 60
 		then
 			return A.WordOfGlory:Show(icon)
 		end

@@ -166,6 +166,7 @@ A[3] = function(icon)
 			and Unit(unit):HealthDeficit() >= (HealCalc(A.HolyLight) * 2)
 			and Unit(player):HasBuffs(A.InfusionOfLight.ID) > 0
 			and Unit(player):HasBuffs(A.DivineFavor.ID) > 0
+			and not isMoving
 		then
 			return A.FlashofLight:Show(icon)
 		end
