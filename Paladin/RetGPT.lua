@@ -1,3 +1,8 @@
+-- RetGPT Paladin Rotation v1.0.3
+-- Last Update: 10/17/2024
+
+-- TODO: Templar Support
+
 local _G, setmetatable = _G, setmetatable
 local TMW = _G.TMW
 local CNDT = TMW.CNDT
@@ -65,6 +70,9 @@ Action[ACTION_CONST_PALADIN_RETRIBUTION] = {
 	BoundlessJudgment = Create({ Type = "Spell", ID = 405278 }),
 	CrusadingStrikes = Create({ Type = "Spell", ID = 404542 }),
 
+	-- Hero Talents
+	HammerOfLight = Create({ Type = "Spell", ID = 427453 }),
+
 	-- Racials
 	ArcaneTorrent = Create({ Type = "Spell", ID = 50613 }), -- Crusader Strike
 }
@@ -73,7 +81,7 @@ local A = setmetatable(Action[ACTION_CONST_PALADIN_RETRIBUTION], { __index = Act
 
 A[3] = function(icon)
 	local HolyPower = Player:HolyPower()
-	local inMelee = true
+	local inMelee = A.Rebuke:IsInRange(target)
 	local unitCount = MultiUnits:GetBySpell(A.Rebuke)
 
 	local function DamageRotation(unit)
@@ -83,19 +91,23 @@ A[3] = function(icon)
 			end
 		end
 
-		if A.FinalVerdict:IsReady(unit) and unitCount == 1 then
+		if A.HammerOfLight:IsReady(player) and inMelee then
+			return A.HammerOfLight:Show(icon)
+		end
+
+		if A.FinalVerdict:IsReady(unit) and unitCount <= 2 and inMelee then
 			return A.FinalVerdict:Show(icon)
 		end
 
-		if A.DivineStorm:IsReady(player) and HolyPower >= 3 then
+		if A.DivineStorm:IsReady(player) and inMelee then
 			return A.DivineStorm:Show(icon)
 		end
 
-		if A.WakeOfAshes:IsReady(player) then
+		if A.WakeOfAshes:IsReady(player) and inMelee then
 			return A.WakeOfAshes:Show(icon)
 		end
 
-		if A.DivineToll:IsReady(unit) and HolyPower < 2 then
+		if A.DivineToll:IsReady(unit) and HolyPower < 3 then
 			return A.DivineToll:Show(icon)
 		end
 

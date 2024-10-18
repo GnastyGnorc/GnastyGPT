@@ -1,8 +1,5 @@
--- LightForged Avenger Paladin Rotation v1.0.0
--- Last Update: 8/22/2024
--- TODO: Consecreat in combat
--- infusion stacks
--- AC doesn't need HP
+-- LightForged Avenger Paladin Rotation v1.0.1
+-- Last Update: 10/15/2024
 
 local _G, setmetatable = _G, setmetatable
 local TMW = _G.TMW
@@ -35,14 +32,18 @@ Action[ACTION_CONST_PALADIN_HOLY] = {
 	HammerofWrath = Create({ Type = "Spell", ID = 24275 }),
 	HandOfReckoning = Create({ Type = "Spell", ID = 62124 }),
 	Intercession = Create({ Type = "Spell", ID = 391054 }),
-	Judgment = Create({ Type = "Spell", ID = 275779 }),
+	Judgment = Create({ Type = "Spell", ID = 275773 }),
 	LayOnHands = Create({ Type = "Spell", ID = 633 }),
 	Rebuke = Create({ Type = "Spell", ID = 96231 }),
 	Redemption = Create({ Type = "Spell", ID = 7328 }),
 	RetributionAura = Create({ Type = "Spell", ID = 183435 }),
 	SenseUndead = Create({ Type = "Spell", ID = 5502 }),
 	ShieldOfTheRighteous = Create({ Type = "Spell", ID = 53600 }),
-	WordOfGlory = Create({ Type = "Spell", ID = 85673, Texture = 85673 }),
+	WordOfGlory = Create({ Type = "Spell", ID = 85673, Texture = 5502 }),
+	HolyBulwark = Create({ Type = "Spell", ID = 432459 }),
+	SacredWeapon = Create({ Type = "Spell", ID = 432472 }),
+
+
 
 	-- Spec Tree
 	Absolution = Create({ Type = "Spell", ID = 212056 }),
@@ -53,6 +54,7 @@ Action[ACTION_CONST_PALADIN_HOLY] = {
 	DivineProtection = Create({ Type = "Spell", ID = 498 }),
 	HolyLight = Create({ Type = "Spell", ID = 82326 }),
 	HolyShock = Create({ Type = "Spell", ID = 20473 }),
+	HolyShockDamage = Create({ Type = "Spell", ID = 20473 , Texture = 236216}),
 	HolyPrism = Create({ Type = "Spell", ID = 114165 }),
 	LightOfDawn = Create({ Type = "Spell", ID = 85222 }),
 	LightsHammer = Create({ Type = "Spell", ID = 114158 }),
@@ -85,6 +87,8 @@ Action[ACTION_CONST_PALADIN_HOLY] = {
 
 	-- Buffs
 	ShiningLightBuff = Create({ Type = "Spell", ID = 414445, Hidden = true }),
+	DivineFavor = Create({ Type = "Spell", ID = 210294 }),
+	InfusionOfLight = Create({ Type = "Spell", ID = 54149 }),
 
 	-- Debuffs
 
@@ -119,7 +123,7 @@ A[3] = function(icon)
 	-- print(Unit(player):Name())
 	-- print(Unit(unit):Name())
 
-	-- local getMembersAll = HealingEngine.GetMembersAll()
+	local getMembersAll = HealingEngine.GetMembersAll()
 	local LightOfDawnHP = 90
 	local LightofDawnUnits = 4
 	local WordOfGloryHP = 85
@@ -139,11 +143,63 @@ A[3] = function(icon)
 	end
 
 	local function HealingRotation(unit)
+		function isUnitValid(unit)
+			return isInRange(unit) and not Unit(unit):IsDead() and IsUnitFriendly(unit)
+		end
+
+		if
+			A.BeaconOfVirtue:IsReady(unit)
+			and A.BeaconOfVirtue:IsSpellLearned()
+			and CheckMembersBelowHealthPercent(getMembersAll, 80, 3)
+		then
+			return A.BeaconOfVirtue:Show(icon)
+		end
+
+		-- Emergency Lay on Hands
 		if
 			A.LayOnHands:IsReady(unit)
 			and (Unit(unit):HealthPercent() <= 30 or Unit(unit):HealthDeficit() >= Unit(player):HealthMax())
 		then
 			return A.LayOnHands:Show(icon)
+		end
+
+		-- Blessings
+
+		if A.BlessingofSummer:IsReady(player) then
+			return A.BlessingofSummer:Show(icon)
+		end
+
+		if A.BlessingofAutumn:IsReady(player) then
+			return A.BlessingofSummer:Show(icon)
+		end
+
+		if A.BlessingofSpring:IsReady(player) then
+			return A.BlessingofSummer:Show(icon)
+		end
+
+		if A.BlessingofWinter:IsReady(player) then
+			return A.BlessingofSummer:Show(icon)
+		end
+
+		if A.HolyBulwark:IsReady(player) or A.SacredWeapon:IsReady(player) then
+			return A.GiftoftheNaaru:Show(icon)
+		end
+
+		if HolyPower == 5 and isUnitValid(unit) then
+			if A.WordOfGlory:IsReady(unit) and Unit(unit):HealthDeficit() >= HealCalc(A.WordOfGlory) then
+				return A.WordOfGlory:Show(icon)
+			end
+
+			-- LoD in Raid
+
+			-- if A.LightOfDawn:IsReady(player) then
+			-- 	return A.LightOfDawn:Show(icon)
+			-- end
+
+			-- SotR in M+
+			if A.ShieldOfTheRighteous:IsReady(player) and IsUnitEnemy(target) then
+				return A.ShieldOfTheRighteous:Show(icon)
+			end
 		end
 
 		if AvengingCrusaderActive then
@@ -154,40 +210,18 @@ A[3] = function(icon)
 			if A.Judgment:IsReady(target) and IsUnitEnemy(target) and not Unit(target):IsDead() then
 				return A.Judgment:Show(icon)
 			end
-
-			if HolyPower >= 3 and isUnitValid(unit) then
-				if A.WordOfGlory:IsReady(unit) and Unit(unit):HealthDeficit() >= HealCalc(A.WordOfGlory) then
-					return A.WordOfGlory:Show(icon)
-				end
-
-				-- LoD in Raid
-
-				-- if A.LightOfDawn:IsReady(player) then
-				-- 	return A.LightOfDawn:Show(icon)
-				-- end
-
-				-- SotR in M+
-				if A.ShieldOfTheRighteous:IsReady(player) and isUnitEnemy(target) then
-					return A.ShieldOfTheRighteous:Show(icon)
-				end
-			end
-
-			if A.HolyShock:IsReady(unit) and Unit(unit):HealthDeficit() >= HealCalc(A.HolyShock) then
-				return A.HolyShock:Show(icon)
-			end
-
-			-- Attack Holy Shock
-			if A.HolyShock:IsReady(unit) and IsUnitEnemy(target) then
-				return A.Fireblood:Show(icon)
-			end
 		end
 
-		if A.AvengingCrusader:IsReady(player) and not AvengingCrusaderActive and inCombat then
-			return A.AvengingCrusader:Show(icon)
-		end
+		-- if A.AvengingCrusader:IsReady(player) and not AvengingCrusaderActive and inCombat then
+		-- 	return A.AvengingCrusader:Show(icon)
+		-- end
 
 		if A.HolyPrism:IsReady(target) and IsUnitEnemy(target) and not Unit(target):IsDead() then
 			return A.HolyPrism:Show(icon)
+		end
+
+		if A.Judgment:IsReady(target) and IsUnitEnemy(target) and not Unit(target):IsDead() then
+			return A.Judgment:Show(icon)
 		end
 
 		if
@@ -197,6 +231,18 @@ A[3] = function(icon)
 			and Unit(player):HasBuffs(A.Consecration.ID) == 0
 		then
 			return A.Consecration:Show(icon)
+		end
+
+		if
+			A.HolyShock:IsReady(unit)
+			and Unit(unit):HealthDeficit() >= HealCalc(A.HolyShock)
+			and not IsUnitEnemy(unit)
+		then
+			return A.HolyShock:Show(icon)
+		end
+
+		if A.CrusaderStrike:IsReady(target) and IsUnitEnemy(target) and not Unit(target):IsDead() then
+			return A.CrusaderStrike:Show(icon)
 		end
 
 		-- Spend Holy Power
@@ -213,27 +259,15 @@ A[3] = function(icon)
 			-- end
 
 			-- SotR in M+
-			if A.ShieldOfTheRighteous:IsReady(player) and isUnitEnemy(target) then
+			if A.ShieldOfTheRighteous:IsReady(player) and IsUnitEnemy(target) then
 				return A.ShieldOfTheRighteous:Show(icon)
 			end
-		end
-
-		if A.HolyShock:IsReady(unit) and Unit(unit):HealthDeficit() >= HealCalc(A.HolyShock) then
-			return A.HolyShock:Show(icon)
 		end
 
 		-- Attack Holy Shock
 
 		if A.HolyShock:IsReady(unit) and IsUnitEnemy(target) then
 			return A.Fireblood:Show(icon)
-		end
-
-		if A.Judgment:IsReady(target) and IsUnitEnemy(target) and not Unit(target):IsDead() then
-			return A.Judgment:Show(icon)
-		end
-
-		if A.CrusaderStrike:IsReady(target) and IsUnitEnemy(target) and not Unit(target):IsDead() then
-			return A.CrusaderStrike:Show(icon)
 		end
 
 		if A.HammerofWrath:IsReady(target) and IsUnitEnemy(target) and not Unit(target):IsDead() then
