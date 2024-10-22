@@ -161,6 +161,22 @@ A[3] = function(icon)
 			return A.LayOnHands:Show(icon)
 		end
 
+		if A.BlessingofSummer:IsReady(player) then
+			return A.BlessingofSummer:Show(icon)
+		end
+
+		if A.BlessingofAutumn:IsReady(player) then
+			return A.BlessingofSummer:Show(icon)
+		end
+
+		if A.BlessingofSpring:IsReady(player) then
+			return A.BlessingofSummer:Show(icon)
+		end
+
+		if A.BlessingofWinter:IsReady(player) then
+			return A.BlessingofSummer:Show(icon)
+		end
+
 		if
 			A.HolyLight:IsReady(unit)
 			and Unit(unit):HealthDeficit() >= (HealCalc(A.HolyLight) * 2)

@@ -1,5 +1,5 @@
--- RetGPT Paladin Rotation v1.0.3
--- Last Update: 10/17/2024
+-- RetGPT Paladin Rotation v1.0.4
+-- Last Update: 10/21/2024
 
 -- TODO: Templar Support
 
@@ -92,14 +92,14 @@ A[3] = function(icon)
 		end
 
 		if A.HammerOfLight:IsReady(player) and inMelee then
-			return A.HammerOfLight:Show(icon)
+			return A.WakeOfAshes:Show(icon)
 		end
 
-		if A.FinalVerdict:IsReady(unit) and unitCount <= 2 and inMelee then
+		if A.FinalVerdict:IsReady(unit) and unitCount <= 2 and inMelee and not A.HammerOfLight:IsReady(player) then
 			return A.FinalVerdict:Show(icon)
 		end
 
-		if A.DivineStorm:IsReady(player) and inMelee then
+		if A.DivineStorm:IsReady(player) and inMelee and not A.HammerOfLight:IsReady(player) then
 			return A.DivineStorm:Show(icon)
 		end
 
