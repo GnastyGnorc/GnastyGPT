@@ -92,6 +92,16 @@ Action[ACTION_CONST_MONK_BREWMASTER] = {
 	-- Talents
 	BlackoutCombo = Action.Create({ Type = "Spell", ID = 196736 }),
 	SpiritOfTheOx = Action.Create({ Type = "Spell", ID = 400629 }),
+
+	-- Racials
+	ArcaneTorrent = Create({ Type = "Spell", ID = 50613 }),
+	GiftoftheNaaru = Action.Create({ Type = "Spell", ID = 59544 }),
+	WarStomp = Action.Create({ Type = "Spell", ID = 20549 }),
+	Stoneform = Action.Create({ Type = "Spell", ID = 20594 }),
+	Fireblood = Action.Create({ Type = "Spell", ID = 265221 }),
+	Regeneratin = Create({ Type = "Spell", ID = 291944 }),
+
+
 }
 
 local A = setmetatable(Action[ACTION_CONST_MONK_BREWMASTER], { __index = Action })

@@ -23,9 +23,9 @@ Action[ACTION_CONST_WARRIOR_PROTECTION] = {
 	Execute = Action.Create({ Type = "Spell", ID = 5308 }),
 	ShieldBlock = Action.Create({ Type = "Spell", ID = 2565 }),
 	Pummel = Action.Create({ Type = "Spell", ID = 6552 }),
-    Ravager = Action.Create({ Type = "Spell", ID = 228920 }),
-    Avatar = Action.Create({ Type = "Spell", ID = 401150 }),
-    ChampionsSpear = Action.Create({ Type = "Spell", ID = 376079 }),
+	Ravager = Action.Create({ Type = "Spell", ID = 228920 }),
+	Avatar = Action.Create({ Type = "Spell", ID = 401150 }),
+	ChampionsSpear = Action.Create({ Type = "Spell", ID = 376079 }),
 
 	-- Spec Abilities
 	Revenge = Action.Create({ Type = "Spell", ID = 6572 }),
@@ -37,7 +37,12 @@ Action[ACTION_CONST_WARRIOR_PROTECTION] = {
 	ViolentOutburst = Action.Create({ Type = "Spell", ID = 313255 }),
 
 	-- Racials
-	ArcaneTorrent = Create({ Type = "Spell", ID = 50613 }),
+	ArcaneTorrent = Create({ Type = "Spell", ID = 50613 }), -- Shield Block
+	GiftoftheNaaru = Action.Create({ Type = "Spell", ID = 59544 }),
+	WarStomp = Action.Create({ Type = "Spell", ID = 20549 }),
+	Stoneform = Action.Create({ Type = "Spell", ID = 20594 }),
+	Fireblood = Action.Create({ Type = "Spell", ID = 265221 }),
+	Regeneratin = Create({ Type = "Spell", ID = 291944 }),
 }
 
 local A = setmetatable(Action[ACTION_CONST_WARRIOR_PROTECTION], { __index = Action })
@@ -58,17 +63,17 @@ A[3] = function(icon)
 			-- Champions Spear
 			-- Shield Charge
 
-            if A.Ravager:IsReady(player) then
-                return A.Ravager:Show(icon)
-            end
+			if A.Ravager:IsReady(player) then
+				return A.Ravager:Show(icon)
+			end
 
-            if A.Avatar:IsReady(player) then
-                return A.Avatar:Show(icon)
-            end
+			if A.Avatar:IsReady(player) then
+				return A.Avatar:Show(icon)
+			end
 
-            if A.ChampionsSpear:IsReady(player) then
-                return A.ChampionsSpear:Show(icon)
-            end
+			if A.ChampionsSpear:IsReady(player) then
+				return A.WarStomp:Show(icon)
+			end
 		end
 
 		if A.ImpendingVictory:IsReady(unit) and Unit(player):HealthPercent() < 50 then
@@ -90,7 +95,7 @@ A[3] = function(icon)
 		end
 
 		if A.ThunderClap:IsReady(player) and inMelee then
-			return A.ThunderClap:Show(icon)
+			return A.Stoneform:Show(icon)
 		end
 
 		-- Revenge on aoe or fish for shield slam resets

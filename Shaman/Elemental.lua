@@ -41,6 +41,7 @@ Action[ACTION_CONST_SHAMAN_ELEMENTAL] = {
 
 	-- Racials
 	Darkflight = Create({ Type = "Spell", ID = 68992 }),
+	GiftofNaaru = Action.Create({ Type = "Spell", ID = 59544 }),
 }
 
 local A = setmetatable(Action[ACTION_CONST_SHAMAN_ELEMENTAL], { __index = Action })
@@ -55,7 +56,7 @@ A[3] = function(icon)
 		end
 
 		if A.PrimordialWave:IsReady(unit) then
-			return A.PrimordialWave:Show(icon)
+			return A.GiftofNaaru:Show(icon)
 		end
 
 		if A.LiquidMagmaTotem:IsReady(player) then

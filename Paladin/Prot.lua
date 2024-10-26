@@ -47,6 +47,11 @@ Action[ACTION_CONST_PALADIN_PROTECTION] = {
 	DecayStrike = Create({ Type = "Spell", ID = 373917, Hidden = true }),
 
 	-- Racials
+	ArcaneTorrent = Create({ Type = "Spell", ID = 50613 }), -- Crusader Strike
+	GiftofNaaru = Action.Create({ Type = "Spell", ID = 59544 }),
+	WarStomp = Action.Create({ Type = "Spell", ID = 20549 }),
+	Stoneform = Action.Create({ Type = "Spell", ID = 20594 }),
+	Fireblood = Action.Create({ Type = "Spell", ID = 265221 }),
 	Regeneratin = Create({ Type = "Spell", ID = 291944 }),
 }
 
@@ -60,6 +65,7 @@ A[3] = function(icon)
 	local HolyPower = Player:HolyPower()
 	local inMelee = true
 	local inCombat = Unit(player):CombatTime() > 0
+	local isMoving = A.Player:IsMoving()
 
 	function DamageRotation(unit)
 		if
@@ -75,9 +81,7 @@ A[3] = function(icon)
 		end
 
 		if
-			A.ShieldOfTheRighteous:IsReady(player)
-			and IsInMelee(unit)
-			and HolyPower >= 3
+			A.ShieldOfTheRighteous:IsReady(player) and IsInMelee(unit) and HolyPower >= 3
 			or (Unit(player):HasBuffs(A.DivinePurpose.ID) ~= 0)
 		then
 			return A.ShieldOfTheRighteous:Show(icon)
@@ -87,7 +91,13 @@ A[3] = function(icon)
 			return A.AvengersShield:Show(icon)
 		end
 
-		if A.Consecration:IsReady(player) and inCombat and IsInMelee(unit) and Unit(player):HasBuffs(A.ConsecrationBuff.ID) == 0 then
+		if
+			A.Consecration:IsReady(player)
+			and inCombat
+			and IsInMelee(unit)
+			and Unit(player):HasBuffs(A.ConsecrationBuff.ID) == 0
+			and not isMoving
+		then
 			return A.Consecration:Show(icon)
 		end
 
@@ -121,7 +131,7 @@ A[3] = function(icon)
 
 		-- if A.Judgement:IsReady(unit) then return A.Judgement:Show(icon) end
 
-		if A.Consecration:IsReady(player) and IsInMelee(unit) then
+		if A.Consecration:IsReady(player) and IsInMelee(unit) and not isMoving then
 			return A.Consecration:Show(icon)
 		end
 	end

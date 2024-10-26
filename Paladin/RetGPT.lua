@@ -74,7 +74,12 @@ Action[ACTION_CONST_PALADIN_RETRIBUTION] = {
 	HammerOfLight = Create({ Type = "Spell", ID = 427453 }),
 
 	-- Racials
-	ArcaneTorrent = Create({ Type = "Spell", ID = 50613 }), -- Crusader Strike
+	ArcaneTorrent = Create({ Type = "Spell", ID = 50613 }), -- Wake of Ashes
+	GiftoftheNaaru = Action.Create({ Type = "Spell", ID = 59544 }),
+	WarStomp = Action.Create({ Type = "Spell", ID = 20549 }),
+	Stoneform = Action.Create({ Type = "Spell", ID = 20594 }),
+	Fireblood = Action.Create({ Type = "Spell", ID = 265221 }),
+	Regeneratin = Create({ Type = "Spell", ID = 291944 }),
 }
 
 local A = setmetatable(Action[ACTION_CONST_PALADIN_RETRIBUTION], { __index = Action })
@@ -91,24 +96,29 @@ A[3] = function(icon)
 			end
 		end
 
-		if A.HammerOfLight:IsReady(player) and inMelee then
-			return A.WakeOfAshes:Show(icon)
+		if A.HammerOfLight:IsReady(unit) and inMelee then
+			return A.ArcaneTorrent:Show(icon)
 		end
 
-		if A.FinalVerdict:IsReady(unit) and unitCount <= 2 and inMelee and not A.HammerOfLight:IsReady(player) then
+		-- Free Divine
+		if A.DivineStorm:IsReady(player) and Unit(player):HasBuffs(A.EmpyreanPower.ID) ~= 0 and inMelee then
+			return A.DivineStorm:Show(icon)
+		end
+
+		if A.FinalVerdict:IsReady(unit) and unitCount <= 2 and inMelee and not A.HammerOfLight:IsReady(unit) then
 			return A.FinalVerdict:Show(icon)
 		end
 
-		if A.DivineStorm:IsReady(player) and inMelee and not A.HammerOfLight:IsReady(player) then
+		if A.DivineStorm:IsReady(player) and inMelee and not A.HammerOfLight:IsReady(unit) then
 			return A.DivineStorm:Show(icon)
 		end
 
 		if A.WakeOfAshes:IsReady(player) and inMelee then
-			return A.WakeOfAshes:Show(icon)
+			return A.ArcaneTorrent:Show(icon)
 		end
 
 		if A.DivineToll:IsReady(unit) and HolyPower < 3 then
-			return A.DivineToll:Show(icon)
+			return A.GiftoftheNaaru:Show(icon)
 		end
 
 		if A.BladeOfJustice:IsReady(unit) and HolyPower <= 3 then

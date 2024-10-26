@@ -43,8 +43,6 @@ Action[ACTION_CONST_PALADIN_HOLY] = {
 	HolyBulwark = Create({ Type = "Spell", ID = 432459 }),
 	SacredWeapon = Create({ Type = "Spell", ID = 432472 }),
 
-
-
 	-- Spec Tree
 	Absolution = Create({ Type = "Spell", ID = 212056 }),
 	AuraMaster = Create({ Type = "Spell", ID = 31821 }),
@@ -54,7 +52,7 @@ Action[ACTION_CONST_PALADIN_HOLY] = {
 	DivineProtection = Create({ Type = "Spell", ID = 498 }),
 	HolyLight = Create({ Type = "Spell", ID = 82326 }),
 	HolyShock = Create({ Type = "Spell", ID = 20473 }),
-	HolyShockDamage = Create({ Type = "Spell", ID = 20473 , Texture = 236216}),
+	HolyShockDamage = Create({ Type = "Spell", ID = 20473, Texture = 236216 }),
 	HolyPrism = Create({ Type = "Spell", ID = 114165 }),
 	LightOfDawn = Create({ Type = "Spell", ID = 85222 }),
 	LightsHammer = Create({ Type = "Spell", ID = 114158 }),
@@ -81,9 +79,12 @@ Action[ACTION_CONST_PALADIN_HOLY] = {
 	}),
 
 	-- Racials
-	GiftoftheNaaru = Create({ Type = "Spell", ID = 59542 }),
-	Fireblood = Create({ Type = "Spell", ID = 265221 }),
-	ArcaneTorrent = Create({ Type = "Spell", ID = 50613 }),
+	ArcaneTorrent = Create({ Type = "Spell", ID = 50613 }), -- Crusader Strike
+	GiftoftheNaaru = Action.Create({ Type = "Spell", ID = 59544 }),
+	WarStomp = Action.Create({ Type = "Spell", ID = 20549 }),
+	Stoneform = Action.Create({ Type = "Spell", ID = 20594 }),
+	Fireblood = Action.Create({ Type = "Spell", ID = 265221 }),
+	Regeneratin = Create({ Type = "Spell", ID = 291944 }),
 
 	-- Buffs
 	ShiningLightBuff = Create({ Type = "Spell", ID = 414445, Hidden = true }),
@@ -212,9 +213,13 @@ A[3] = function(icon)
 			end
 		end
 
-		-- if A.AvengingCrusader:IsReady(player) and not AvengingCrusaderActive and inCombat then
-		-- 	return A.AvengingCrusader:Show(icon)
-		-- end
+		if A.DivineToll:IsReady(unit) then
+			return A.WarStomp:Show(icon)
+		end
+
+		if A.AvengingCrusader:IsReady(player) and not AvengingCrusaderActive and inCombat then
+			return A.AvengingCrusader:Show(icon)
+		end
 
 		if A.HolyPrism:IsReady(target) and IsUnitEnemy(target) and not Unit(target):IsDead() then
 			return A.HolyPrism:Show(icon)
@@ -266,7 +271,7 @@ A[3] = function(icon)
 
 		-- Attack Holy Shock
 
-		if A.HolyShock:IsReady(unit) and IsUnitEnemy(target) then
+		if A.HolyShock:IsReady(target) and IsUnitEnemy(target) and not Unit(target):IsDead() then
 			return A.Fireblood:Show(icon)
 		end
 
