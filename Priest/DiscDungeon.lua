@@ -36,8 +36,9 @@ Action[ACTION_CONST_PRIEST_DISCIPLINE] = {
 	PowerWordShield = Create({ Type = "Spell", ID = 17 }),
 	Renew = Create({ Type = "Spell", ID = 139 }),
 	ShadowWordDeath = Create({ Type = "Spell", ID = 32379 }),
-	ShadowFiend = Create({ Type = "Spell", ID = 34433 }),
 	Smite = Create({ Type = "Spell", ID = 585 }),
+	ShadowFiend = Create({ Type = "Spell", ID = 34433 }),
+	VoidWraith = Create({ Type = "Spell", ID = 451235 }),
 
 	-- Spec Tree
 	Penance = Create({ Type = "Spell", ID = 47540 }),
@@ -60,8 +61,15 @@ Action[ACTION_CONST_PRIEST_DISCIPLINE] = {
 	ShadowWordPainDebuff = Create({ Type = "Spell", ID = 589, Hidden = true }),
 
 	-- Racials
-	Stoneform = Create({ Type = "Spell", ID = 20594 }),
 	ArcaneTorrent = Create({ Type = "Spell", ID = 50613 }),
+	GiftoftheNaaru = Action.Create({ Type = "Spell", ID = 59544 }),
+	WarStomp = Action.Create({ Type = "Spell", ID = 20549 }),
+	Stoneform = Action.Create({ Type = "Spell", ID = 20594 }),
+	Fireblood = Action.Create({ Type = "Spell", ID = 265221 }),
+	Regeneratin = Create({ Type = "Spell", ID = 291944 }),
+
+	-- Talents
+	VoidWraithTalent = Create({ Type = "Spell", ID = 451234 }),
 }
 
 local A = setmetatable(Action[ACTION_CONST_PRIEST_DISCIPLINE], { __index = Action })
@@ -79,7 +87,7 @@ local function HealCalc(heal)
 	end
 
 	-- print("(healamount * 1000): ", (healamount * 1000))
-	print("healamount: ", healamount)
+	-- print("healamount: ", healamount)
 	return healamount
 end
 
@@ -123,8 +131,12 @@ A[3] = function(icon)
 			return A.PowerWordRadiance:Show(icon)
 		end
 
-		if A.ShadowFiend:IsReady(target) and IsUnitEnemy(target) and BurstIsON(player) then
-			return A.ShadowFiend:Show(icon)
+		if A.ShadowFiend:IsReady(target) and IsUnitEnemy(target) and not A.VoidWraithTalent:IsTalentLearned() then
+			return A.WarStomp:Show(icon)
+		end
+
+		if A.VoidWraith:IsReady(target) and IsUnitEnemy(target) then
+			return A.WarStomp:Show(icon)
 		end
 
 		if A.MindBlast:IsReady(target) then

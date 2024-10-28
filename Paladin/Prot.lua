@@ -48,7 +48,7 @@ Action[ACTION_CONST_PALADIN_PROTECTION] = {
 
 	-- Racials
 	ArcaneTorrent = Create({ Type = "Spell", ID = 50613 }), -- Crusader Strike
-	GiftofNaaru = Action.Create({ Type = "Spell", ID = 59544 }),
+	GiftoftheNaaru = Action.Create({ Type = "Spell", ID = 59544 }),
 	WarStomp = Action.Create({ Type = "Spell", ID = 20549 }),
 	Stoneform = Action.Create({ Type = "Spell", ID = 20594 }),
 	Fireblood = Action.Create({ Type = "Spell", ID = 265221 }),
