@@ -217,7 +217,7 @@ A[3] = function(icon)
 			return A.WarStomp:Show(icon)
 		end
 
-		if A.AvengingCrusader:IsReady(player) and not AvengingCrusaderActive and inCombat then
+		if A.AvengingCrusader:IsReady(player) and not AvengingCrusaderActive and inCombat and inMelee then
 			return A.AvengingCrusader:Show(icon)
 		end
 
