@@ -92,11 +92,34 @@ Pet:AddActionsSpells(253, {
 }, true)
 
 A[3] = function(icon)
-	local isAoE = GetToggle(2, "AoE")
+
+
+	local function GetEnemiesInRangeOfPetAttack()
+		local petAttackSpellIDs = {16827, 17253, 49966}  -- Claw, Bite, Smack
+		local enemyCount = 0
+	
+		for i = 1, 40 do
+			local unitID = "nameplate" .. i
+			if UnitExists(unitID) and UnitCanAttack("player", unitID) then
+				for _, spellID in ipairs(petAttackSpellIDs) do
+					if C_Spell.IsSpellInRange(spellID, unitID) == true then
+						enemyCount = enemyCount + 1
+						break
+					end
+				end
+			end
+		end
+	
+		return enemyCount
+	end
+
+	local isAoE = GetEnemiesInRangeOfPetAttack() >= 2
 
 	-- print(Pet:GetInRange(49966))
 	-- print(Pet:GetInRange(17253))
 	-- print(Pet:GetInRange(16827))
+
+	
 
 	local function BasicDamageRotation(unit)
 		local petHP = Unit(pet):HealthPercent()

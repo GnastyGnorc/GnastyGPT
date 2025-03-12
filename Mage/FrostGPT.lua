@@ -212,7 +212,7 @@ A[3] = function(icon)
 		if
 			A.Flurry:IsReadyByPassCastGCD(unit)
 			and A.GlacialSpike:IsSpellInCasting()
-			and Unit(unit):HasDeBuffs(A.WintersChill.ID) < 3
+			and Unit(unit):HasDeBuffs(A.WintersChill.ID) < 1
 		then
 			return A.Flurry:Show(icon)
 		end
@@ -220,7 +220,7 @@ A[3] = function(icon)
 		if
 			A.Flurry:IsReadyByPassCastGCD(unit)
 			and A.Frostbolt:IsSpellInCasting()
-			and Unit(unit):HasDeBuffs(A.WintersChill.ID) < 2
+			and Unit(unit):HasDeBuffs(A.WintersChill.ID) < 1
 			and A.DeathsChillTalent:IsTalentLearned()
 		then
 			return A.Flurry:Show(icon)
